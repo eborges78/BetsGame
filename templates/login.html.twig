@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    {% if error is defined %}
+        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form action="{{ path('home.login') }}" method="post">
+        <input type="hidden" name="_target_path" value="{{ path('home.action') }}" />
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="_username" value="{% if last_username is defined %}{{ last_username }}{% endif %}" />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="_password" />
+
+        <button type="submit">login</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% set eventId = event.id %}
+{% set betOk = false %}
+{% set eventBet = null %}
+{% if eventId in bets|keys %}
+    {% set eventBet = bets[eventId] %}
+    {% set betOk = true %}
+{% endif %}
+<div class="row" style="padding-top:10px;diplay:block;height:220px;border:1px solid #313131;width:300px;margin:5px;">
+    <div style="display: block;width:100%;height: 50px;">
+        <div style="float:left;width:40%;text-align:center;">
+            <img src="https://static.sportytrader.com/logos/foot/fiches/{{ event.team1Logo }}@2x.png" width="50">
+        </div>
+        <div style="float:left;width:20%;text-align:center;padding-top:20px;line-height: 50px;">
+            VS
+        </div>
+        <div style="float:left;width:40%;text-align:center;">
+            <img src="https://static.sportytrader.com/logos/foot/fiches/{{ event.team2Logo }}@2x.png" width="50">
+        </div>
+    </div>
+    <div style="display: block;width:100%;height: 30px;">
+        <div style="float:left;width:40%;text-align:center;">
+            {{ event.team1Name }}
+        </div>
+        <div style="float:left;width:20%;text-align:center;padding-top:20px;line-height: 50px;">
+        </div>
+        <div style="float:left;width:40%;text-align:center;">
+            {{ event.team2Name }}
+        </div>
+    </div>
+    <div style="display: block;width:100%;height: 30px;">
+        <div style="float:left;width:50%;text-align:center;">
+            <input title="Score de {{ event.team1Name }}" type="number" min="0" max="64" id="event_{{ eventId }}_score_{{ event.team1Id }}"
+                   value="{% if betOk %}{{ eventBet['score1'] }}{% else %}0{% endif %}"
+                   name="event_{{ eventId }}_score1"
+                   style="width:50px; text-align:center;{% if event.state == 'finished' %}background-color:grey{% endif %}"
+                   {% if event.state == 'finished'%}disabled="disabled"{% endif %}>
+        </div>
+        <div style="float:left;width:50%;text-align:center;">
+            <input title="Score de {{ event.team2Name }}" type="number" min="0" max="64" id="event_{{ eventId }}_score_{{ event.team2Id }}"
+                   value="{% if betOk %}{{ eventBet['score2'] }}{% else %}0{% endif %}"
+                   name="event_{{ eventId }}_score2"
+                   style="width:50px; text-align:center;{% if event.state == 'finished' %}background-color:grey{% endif %}"
+                   {% if event.state == 'finished' %}disabled="disabled"{% endif %}>
+        </div>
+    </div>
+    {% if 'Group' not in phase.label %}
+        <div style="display: block;width:100%;height: 30px;text-align:center;">
+            Vainqueur :
+            <select id="event_{{ eventId }}_winner" name="event_{{ eventId }}_winner" {% if event.state == 'finished' %}disabled="disabled"{% endif %} >
+                {% if event.state == 'finished' %}
+                    <option value="0">-</option>
+                {% endif %}
+                {% if betOk %}
+                    <option {% if eventBet.winnerId == event.team1Id %}selected="selected"{% endif %} value="{{ event.team1Id }}">{{ event.team1Name }}</option>
+                    <option {% if eventBet.winnerId == event.team2Id %}selected="selected"{% endif %}  value="{{ event.team2Id }}">{{ event.team2Name }}</option>
+                {% else %}
+                    <option {% if event.state == 'finished' and event.winnerId == event.team1Id %}selected="selected"{% endif %} value="{{ event.team1Id }}">{{ event.team1Name }}</option>
+                    <option {% if event.state == 'finished' and event.winnerId == event.team2Id %}selected="selected"{% endif %}  value="{{ event.team2Id }}">{{ event.team2Name }}</option>
+                {% endif %}
+            </select>
+        </div>
+    {% endif %}
+    <div style="display: block;width:100%;height: 30px;">
+        {% if event.state == 'next' %}
+            <div style="float:left;width:50%;text-align:center;">
+                -
+            </div>
+            <div style="float:left;width:50%;text-align:center;">
+                -
+            </div>
+        {% else %}
+            {% set team1bold = '' %}
+            {% set team2bold = '' %}
+            {% if event.winnerId == event.team1Id%}
+                {% set team1bold = 'font-weight:bold' %}
+            {% endif %}
+            {% if event.winnerId == event.team2Id%}
+                {% set team2bold = 'font-weight:bold' %}
+            {% endif %}
+            {% if 'Group' in phase.label %}
+                <div style="float:left;width:50%;text-align:center;{{ team1bold }}">
+                    {{ event.team1Score }}
+                </div>
+                <div style="float:left;width:50%;text-align:center;{{ team2bold }}">
+                    {{ event.team2Score }}
+                </div>
+            {% else %}
+                <div style="float:left;width:50%;text-align:center;{{ team1bold }}">
+                    {{ event.team1Score }}
+                </div>
+                <div style="float:left;width:50%;text-align:center;{{ team2bold }}">
+                    {{ event.team2Score }}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div style="display: block;width:100%; text-align:center">
+        <a href="https://www.sportytrader.com/resultat-direct/{{ event.url }}">
+            {{ event.date|date('d/m/Y H:i') }}
+        </a>
+    </div>
+</div>
